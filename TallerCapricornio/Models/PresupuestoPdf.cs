@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using QuestPDF.Fluent;
@@ -13,10 +14,47 @@ namespace TallerCapricornio.Models
         private readonly byte[]? _logo;
         private readonly byte[]? _firma;
 
-        private const string Negro = "#202020";
+        // Paleta tomada del diseño.
+        private const string Negro = "#1F2024";
+        private const string NegroClaro = "#2B2C31";
         private const string Rojo = "#B5121B";
-        private const string Gris = "#F0F0F0";
+        private const string RojoOscuro = "#7A0C12";
+        private const string GrisClaro = "#E6E7EA";
+        private const string Borde = "#C8CACF";
         private const string GrisTexto = "#555555";
+
+        private const float Margen = 24;
+
+        private static readonly CultureInfo Es = CultureInfo.GetCultureInfo("es-AR");
+
+        // Íconos simples en SVG (blancos, para el cuadrado negro de cada tarjeta).
+        private const string IconoCliente =
+            "<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>" +
+            "<circle cx='12' cy='8' r='4.5' fill='white'/>" +
+            "<path d='M3.5 22c0-5.5 4-8 8.5-8s8.5 2.5 8.5 8z' fill='white'/></svg>";
+
+        private const string IconoAuto =
+            "<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>" +
+            "<path d='M2 15l2.2-6.5C4.6 7.5 5.3 7 6.3 7h11.4c1 0 1.7.5 2.1 1.5L22 15v4H2z' fill='white'/>" +
+            "<circle cx='7' cy='18.5' r='2.4' fill='white' stroke='#1F2024' stroke-width='1.2'/>" +
+            "<circle cx='17' cy='18.5' r='2.4' fill='white' stroke='#1F2024' stroke-width='1.2'/></svg>";
+
+        private const string IconoLlave =
+            "<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>" +
+            "<path d='M5 19L14 10' stroke='white' stroke-width='3.6' stroke-linecap='round'/>" +
+            "<circle cx='16.5' cy='7.5' r='4.8' fill='white'/>" +
+            "<path d='M16.5 7.5L21 3' stroke='#1F2024' stroke-width='2.6'/></svg>";
+
+        private const string IconoCaja =
+            "<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>" +
+            "<path d='M12 2l9 5v10l-9 5-9-5V7z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/>" +
+            "<path d='M3 7l9 5 9-5M12 12v10' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/></svg>";
+
+        private const string IconoEngranaje =
+            "<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>" +
+            "<circle cx='12' cy='12' r='8.5' fill='none' stroke='white' stroke-width='4' stroke-dasharray='3.3 3.3'/>" +
+            "<circle cx='12' cy='12' r='6.5' fill='white'/>" +
+            "<circle cx='12' cy='12' r='2.6' fill='#1F2024'/></svg>";
 
         public PresupuestoPdf(
             Presupuesto presupuesto,
@@ -50,62 +88,58 @@ namespace TallerCapricornio.Models
 
         public void Compose(IDocumentContainer container)
         {
-            // Primera página: presupuesto.
+            // ===== Primera página: presupuesto =====
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(20);
+                page.Margin(0); // el encabezado y el pie van de borde a borde
 
-                page.DefaultTextStyle(x =>
-                    x.FontSize(9).FontColor(Negro));
+                page.DefaultTextStyle(x => x.FontSize(8.5f).FontColor(Negro));
 
+                // Contenido: encabezado, título y secciones que crecen con los datos.
                 page.Content().Column(col =>
                 {
-                    col.Spacing(6);
-
                     col.Item().Element(Encabezado);
                     col.Item().Element(FranjaTitulo);
-                    col.Item().Element(FechaYFactura);
 
-                    col.Item().Element(c => Seccion(
-                        c,
-                        "DATOS DEL CLIENTE",
-                        new[]
+                    col.Item()
+                        .PaddingHorizontal(Margen)
+                        .PaddingTop(8)
+                        .Column(cuerpo =>
                         {
-                            ("Apellido y nombre", _presupuesto.ApellidoNombre),
-                            ("Domicilio", _presupuesto.Domicilio),
-                            ("Localidad", _presupuesto.Localidad),
-                            ("Teléfono", _presupuesto.Telefono)
-                        }));
+                            cuerpo.Spacing(8);
 
-                    col.Item().Element(c => Seccion(
-                        c,
-                        "DATOS DEL VEHÍCULO",
-                        new[]
-                        {
-                            ("Vehículo", _presupuesto.Vehiculo),
-                            ("Color", _presupuesto.Color),
-                            ("Patente", _presupuesto.Patente)
-                        }));
+                            cuerpo.Item().Element(FechaYFactura);
+                            cuerpo.Item().Element(TarjetaCliente);
+                            cuerpo.Item().Element(TarjetaVehiculo);
 
-                    col.Item().Element(c => SeccionTexto(
-                        c,
-                        "DETALLE DE REPARACIÓN",
-                        _presupuesto.DetalleReparacion));
+                            cuerpo.Item().Element(c => Tarjeta(
+                                c,
+                                "DETALLE DE REPARACIÓN Y/O PROVISIÓN",
+                                IconoLlave,
+                                body => ListaVinetas(body, _presupuesto.DetalleReparacion)));
 
-                    col.Item().Element(c => SeccionTexto(
-                        c,
-                        "REPUESTOS A PROVEER",
-                        _presupuesto.RepuestosAProveer));
+                            cuerpo.Item().Element(c => Tarjeta(
+                                c,
+                                "REPUESTOS A PROVEER",
+                                IconoCaja,
+                                body => ListaVinetas(body, _presupuesto.RepuestosAProveer)));
+                        });
+                });
 
-                    // Se eliminó el apartado de observaciones.
+                // Pie: importes, total, condiciones y firma siempre abajo de la hoja.
+                page.Footer().Column(pie =>
+                {
+                    pie.Item()
+                        .PaddingHorizontal(Margen)
+                        .PaddingBottom(10)
+                        .Element(BloqueInferior);
 
-                    col.Item().Element(Importes);
-                    col.Item().Element(CondicionesYFirma);
+                    pie.Item().Element(PieNegro);
                 });
             });
 
-            // Páginas siguientes: una fotografía por página.
+            // ===== Páginas siguientes: una fotografía por página =====
             if (_presupuesto.Imagenes != null)
             {
                 var imagenes = _presupuesto.Imagenes
@@ -173,394 +207,553 @@ namespace TallerCapricornio.Models
             }
         }
 
+        // ------------------------------------------------------------------
+        // ENCABEZADO Y TÍTULO
+        // ------------------------------------------------------------------
+
         private void Encabezado(IContainer contenedor)
         {
-            contenedor
-                .Background(Negro)
-                .Padding(8)
-                .Row(row =>
-                {
-                    row.ConstantItem(125)
-                        .Height(62)
-                        .AlignCenter()
-                        .AlignMiddle()
-                        .Element(c =>
-                        {
-                            if (_logo != null && _logo.Length > 0)
+            contenedor.Column(columna =>
+            {
+                columna.Item()
+                    .Background(Negro)
+                    .PaddingHorizontal(Margen)
+                    .PaddingVertical(12)
+                    .Row(row =>
+                    {
+                        // Logo (solo en esta primera página)
+                        row.ConstantItem(230)
+                            .Height(62)
+                            .AlignMiddle()
+                            .Element(c =>
                             {
-                                c.Image(_logo).FitArea();
-                            }
-                            else
+                                if (_logo != null && _logo.Length > 0)
+                                {
+                                    c.Image(_logo).FitArea();
+                                }
+                                else
+                                {
+                                    c.Text("CAPRICORNIO")
+                                        .FontSize(22)
+                                        .Bold()
+                                        .FontColor("#FFFFFF");
+                                }
+                            });
+
+                        row.ConstantItem(14);
+
+                        // Franja roja vertical decorativa
+                        row.ConstantItem(5).Background(Rojo);
+
+                        row.ConstantItem(14);
+
+                        row.RelativeItem()
+                            .AlignMiddle()
+                            .Column(info =>
                             {
-                                c.AlignCenter()
-                                    .AlignMiddle()
-                                    .Text("CAPRICORNIO")
-                                    .FontSize(14)
+                                info.Spacing(3);
+
+                                info.Item()
+                                    .BorderBottom(0.6f)
+                                    .BorderColor("#8A8B90")
+                                    .PaddingBottom(3)
+                                    .Text("Gabriel Vidussi Torres")
+                                    .FontSize(13)
                                     .Bold()
                                     .FontColor("#FFFFFF");
-                            }
-                        });
 
-                    row.ConstantItem(12);
+                                info.Item()
+                                    .Text("Joaquín Ferro 1392 · Santa Rosa, La Pampa")
+                                    .FontColor("#FFFFFF");
 
-                    row.RelativeItem()
-                        .AlignMiddle()
-                        .Column(col =>
-                        {
-                            col.Spacing(2);
+                                info.Item()
+                                    .Text("Tel. 02954-388573 · Cel. 2954-517291")
+                                    .FontColor("#FFFFFF");
 
-                            col.Item()
-                                .Text("TALLER CAPRICORNIO")
-                                .FontSize(16)
-                                .Bold()
-                                .FontColor("#FFFFFF");
+                                info.Item()
+                                    .Text("capricorniot50@gmail.com")
+                                    .FontColor("#FFFFFF");
+                            });
+                    });
 
-                            col.Item()
-                                .Text("Gabriel Vidussi Torres")
-                                .FontSize(10)
-                                .FontColor("#FFFFFF");
-
-                            col.Item()
-                                .Text("Joaquín Ferro 1392 - Santa Rosa")
-                                .FontSize(9)
-                                .FontColor("#FFFFFF");
-
-                            col.Item()
-                                .Text("Tel.: 02954-388573 / 2954-517291")
-                                .FontSize(9)
-                                .FontColor("#FFFFFF");
-
-                            col.Item()
-                                .Text("capricorniot50@gmail.com")
-                                .FontSize(9)
-                                .FontColor("#FFFFFF");
-                        });
-                });
+                // Línea roja bajo el encabezado
+                columna.Item().Height(4).Background(Rojo);
+            });
         }
 
         private void FranjaTitulo(IContainer contenedor)
         {
-            contenedor.Row(row =>
-            {
-                row.RelativeItem()
-                    .Background(Gris)
-                    .Padding(10)
-                    .AlignMiddle()
-                    .Text("PRESUPUESTO")
-                    .FontSize(20)
-                    .Bold()
-                    .FontColor(Negro);
+            contenedor
+                .PaddingTop(4)
+                .Background(NegroClaro)
+                .Row(row =>
+                {
+                    row.RelativeItem()
+                        .PaddingLeft(Margen)
+                        .PaddingVertical(7)
+                        .AlignMiddle()
+                        .Text("PRESUPUESTO")
+                        .FontSize(24)
+                        .Bold()
+                        .FontColor("#FFFFFF");
 
-                row.ConstantItem(120)
-                    .Background(Rojo)
-                    .Padding(10)
-                    .AlignCenter()
-                    .AlignMiddle()
-                    .Column(col =>
-                    {
-                        col.Item()
-                            .Text("N.º")
-                            .FontSize(10)
-                            .FontColor("#FFFFFF");
-
-                        col.Item()
-                            .Text(_presupuesto.Numero.ToString())
-                            .FontSize(22)
-                            .Bold()
-                            .FontColor("#FFFFFF");
-                    });
-            });
+                    row.ConstantItem(200)
+                        .Background(Rojo)
+                        .AlignMiddle()
+                        .AlignCenter()
+                        .Text($"Nº {_presupuesto.Numero:D6}")
+                        .FontSize(20)
+                        .Bold()
+                        .FontColor("#FFFFFF");
+                });
         }
 
         private void FechaYFactura(IContainer contenedor)
         {
             contenedor.Row(row =>
             {
-                row.RelativeItem()
-                    .AlignMiddle()
-                    .Text($"Fecha: {_presupuesto.FechaCreacion:dd/MM/yyyy}")
-                    .FontSize(10)
-                    .Bold();
+                row.RelativeItem().Text(t =>
+                {
+                    t.Span("Fecha: ").Bold();
+                    t.Span(_presupuesto.FechaCreacion.ToString(
+                        "dd / MM / yyyy",
+                        CultureInfo.InvariantCulture));
+                });
 
                 row.RelativeItem()
                     .AlignRight()
-                    .AlignMiddle()
                     .Text("Documento no válido como factura")
-                    .FontSize(8)
-                    .Italic()
-                    .FontColor(GrisTexto);
+                    .FontSize(8);
             });
         }
 
-        private void Seccion(
+        // ------------------------------------------------------------------
+        // TARJETAS (ícono negro + recuadro con título gris)
+        // ------------------------------------------------------------------
+
+        private void Tarjeta(
             IContainer contenedor,
             string titulo,
-            (string Etiqueta, string Valor)[] campos)
+            string icono,
+            Action<IContainer> cuerpo)
         {
-            contenedor.Column(col =>
+            contenedor.Row(row =>
             {
-                col.Spacing(3);
-
-                col.Item()
+                row.ConstantItem(32)
+                    .Height(32)
                     .Background(Negro)
-                    .PaddingVertical(6)
-                    .PaddingHorizontal(9)
-                    .Text(titulo)
-                    .FontSize(10)
-                    .Bold()
-                    .FontColor("#FFFFFF");
+                    .CornerRadius(6)
+                    .Padding(7)
+                    .Svg(icono);
 
-                col.Item()
+                row.ConstantItem(6);
+
+                row.RelativeItem()
                     .Border(1)
-                    .BorderColor("#D0D0D0")
-                    .Padding(6)
-                    .Column(datos =>
+                    .BorderColor(Borde)
+                    .CornerRadius(6)
+                    .Column(card =>
                     {
-                        datos.Spacing(4);
+                        card.Item()
+                            .Background(GrisClaro)
+                            .PaddingVertical(6)
+                            .PaddingHorizontal(10)
+                            .Text(titulo)
+                            .FontSize(9)
+                            .Bold();
 
-                        foreach (var campo in campos)
-                        {
-                            datos.Item().Row(row =>
-                            {
-                                row.ConstantItem(105)
-                                    .Text(campo.Etiqueta + ":")
-                                    .Bold()
-                                    .FontColor(GrisTexto);
-
-                                row.RelativeItem()
-                                    .Text(campo.Valor ?? "—");
-                            });
-                        }
+                        card.Item()
+                            .Padding(9)
+                            .Element(cuerpo);
                     });
             });
         }
 
-        private void SeccionTexto(
-            IContainer contenedor,
-            string titulo,
-            string? contenido)
+        private void TarjetaCliente(IContainer contenedor)
         {
-            contenedor.Column(col =>
+            Tarjeta(contenedor, "DATOS DEL CLIENTE", IconoCliente, body =>
             {
-                col.Spacing(3);
+                body.Column(col =>
+                {
+                    col.Spacing(5);
 
-                col.Item()
-                    .Background(Negro)
-                    .PaddingVertical(6)
-                    .PaddingHorizontal(9)
-                    .Text(titulo)
-                    .FontSize(10)
-                    .Bold()
-                    .FontColor("#FFFFFF");
+                    col.Item().Element(c => CampoLinea(
+                        c, "Apellido y Nombre:", _presupuesto.ApellidoNombre, 100));
 
-                col.Item()
-                    .Border(1)
-                    .BorderColor("#D0D0D0")
-                    .Padding(6)
-                    .MinHeight(30)
-                    .Text(string.IsNullOrWhiteSpace(contenido)
-                        ? "—"
-                        : contenido)
-                    .FontSize(9);
+                    col.Item().Element(c => CampoLinea(
+                        c, "Domicilio:", _presupuesto.Domicilio, 100));
+
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeItem(3).Element(c => CampoLinea(
+                            c, "Localidad:", _presupuesto.Localidad, 100));
+
+                        row.ConstantItem(14);
+
+                        row.RelativeItem(2).Element(c => CampoLinea(
+                            c, "Tel.:", _presupuesto.Telefono, 28));
+                    });
+                });
             });
         }
 
-        private void Importes(IContainer contenedor)
+        private void TarjetaVehiculo(IContainer contenedor)
+        {
+            Tarjeta(contenedor, "DATOS DEL VEHÍCULO", IconoAuto, body =>
+            {
+                body.Column(col =>
+                {
+                    col.Spacing(5);
+
+                    col.Item().Element(c => CampoLinea(
+                        c, "Vehículo:", _presupuesto.Vehiculo, 100));
+
+                    col.Item().Row(row =>
+                    {
+                        row.RelativeItem().Element(c => CampoLinea(
+                            c, "Color:", _presupuesto.Color, 100));
+
+                        row.ConstantItem(14);
+
+                        row.RelativeItem().Element(c => CampoLinea(
+                            c, "Patente:", _presupuesto.Patente, 50));
+                    });
+                });
+            });
+        }
+
+        // Campo con etiqueta a la izquierda y línea inferior (como la planilla).
+        private void CampoLinea(
+            IContainer contenedor,
+            string etiqueta,
+            string? valor,
+            float anchoEtiqueta)
+        {
+            contenedor.Row(row =>
+            {
+                row.ConstantItem(anchoEtiqueta)
+                    .AlignBottom()
+                    .Text(etiqueta)
+                    .FontColor(GrisTexto);
+
+                row.RelativeItem()
+                    .BorderBottom(0.7f)
+                    .BorderColor(Borde)
+                    .PaddingBottom(1)
+                    .PaddingLeft(4)
+                    .MinHeight(14)
+                    .AlignBottom()
+                    .Text(valor ?? string.Empty)
+                    .FontSize(9.5f)
+                    .Bold();
+            });
+        }
+
+        // ------------------------------------------------------------------
+        // LISTAS CON VIÑETAS ROJAS (soportan todas las filas que se carguen)
+        // ------------------------------------------------------------------
+
+        // Cada renglón del texto cargado en el formulario es un ítem.
+        // Los renglones que terminan en ":" (ej. "PINTURA:") se muestran como subtítulo.
+        // Los ítems se acomodan en dos columnas, de izquierda a derecha.
+        private void ListaVinetas(IContainer contenedor, string? texto)
+        {
+            var lineas = Lineas(texto);
+
+            if (lineas.Count == 0)
+            {
+                contenedor.Text("—").FontColor(GrisTexto);
+                return;
+            }
+
+            contenedor.Column(col =>
+            {
+                col.Spacing(4);
+
+                var pendientes = new List<string>();
+
+                void Vaciar()
+                {
+                    for (int i = 0; i < pendientes.Count; i += 2)
+                    {
+                        var izquierda = pendientes[i];
+                        var derecha = i + 1 < pendientes.Count
+                            ? pendientes[i + 1]
+                            : null;
+
+                        col.Item().Row(row =>
+                        {
+                            row.RelativeItem().Element(c => Vineta(c, izquierda));
+                            row.ConstantItem(12);
+                            row.RelativeItem().Element(c =>
+                            {
+                                if (derecha != null)
+                                {
+                                    Vineta(c, derecha);
+                                }
+                            });
+                        });
+                    }
+
+                    pendientes.Clear();
+                }
+
+                foreach (var linea in lineas)
+                {
+                    if (linea.EndsWith(":"))
+                    {
+                        Vaciar();
+
+                        col.Item()
+                            .Text(linea)
+                            .Bold()
+                            .FontSize(9);
+                    }
+                    else
+                    {
+                        pendientes.Add(linea);
+                    }
+                }
+
+                Vaciar();
+            });
+        }
+
+        private void Vineta(IContainer contenedor, string texto)
+        {
+            contenedor.Row(row =>
+            {
+                row.ConstantItem(11)
+                    .PaddingTop(2.5f)
+                    .Height(8)
+                    .Width(6)
+                    .Background(Rojo);
+
+                row.RelativeItem().Text(texto);
+            });
+        }
+
+        private static List<string> Lineas(string? texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto))
+            {
+                return new List<string>();
+            }
+
+            return texto
+                .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(l => l.Trim().TrimStart('-', '•', '*', ' '))
+                .Where(l => l.Length > 0)
+                .ToList();
+        }
+
+        // ------------------------------------------------------------------
+        // BLOQUE INFERIOR: importes + TOTAL + condiciones + firma
+        // ------------------------------------------------------------------
+
+        private void BloqueInferior(IContainer contenedor)
         {
             contenedor.Column(col =>
             {
-                col.Spacing(3);
-
-                col.Item()
-                    .Background(Negro)
-                    .PaddingVertical(6)
-                    .PaddingHorizontal(9)
-                    .Text("USO EXCLUSIVO DEL TALLER")
-                    .FontSize(10)
-                    .Bold()
-                    .FontColor("#FFFFFF");
+                col.Spacing(10);
 
                 col.Item().Row(row =>
                 {
-                    row.RelativeItem(1.3f)
-                        .Border(1)
-                        .BorderColor("#D0D0D0")
-                        .Padding(6)
-                        .Column(detalle =>
-                        {
-                            detalle.Spacing(5);
+                    row.RelativeItem(1.15f).Element(c => Tarjeta(
+                        c,
+                        "PARA USO DEL TALLER OPERANTE",
+                        IconoEngranaje,
+                        body => DetalleImportes(body)));
 
-                            LineaImporte(
-                                detalle, "Impuestos",
-                                _presupuesto.Impuestos);
+                    row.ConstantItem(12);
 
-                            LineaImporte(
-                                detalle, "Mano de obra de chapa",
-                                _presupuesto.ManoObraChapa);
-
-                            LineaImporte(
-                                detalle, "Mano de obra de pintura",
-                                _presupuesto.ManoObraPintura);
-
-                            LineaImporte(
-                                detalle, "Bancada",
-                                _presupuesto.Bancada);
-
-                            LineaImporte(
-                                detalle, "Otros conceptos",
-                                _presupuesto.OtrosConceptos);
-
-                            detalle.Item()
-                                .LineHorizontal(1)
-                                .LineColor("#D0D0D0");
-
-                            detalle.Item().Row(r =>
-                            {
-                                r.RelativeItem()
-                                    .Text("Subtotal")
-                                    .Bold();
-
-                                r.ConstantItem(100)
-                                    .AlignRight()
-                                    .Text(Formatear(_presupuesto.Subtotal))
-                                    .Bold();
-                            });
-
-                            if (_presupuesto.IncluirIVA)
-                            {
-                                detalle.Item().Row(r =>
-                                {
-                                    r.RelativeItem()
-                                        .Text("IVA (21%)");
-
-                                    r.ConstantItem(100)
-                                        .AlignRight()
-                                        .Text(Formatear(
-                                            _presupuesto.ImporteIVA));
-                                });
-                            }
-                        });
-
-                    row.ConstantItem(8);
-
-                    row.RelativeItem()
-                        .Background(Rojo)
-                        .Padding(9)
-                        .AlignCenter()
-                        .AlignMiddle()
-                        .Column(total =>
-                        {
-                            total.Spacing(6);
-
-                            total.Item()
-                                .AlignCenter()
-                                .Text("TOTAL")
-                                .FontSize(13)
-                                .Bold()
-                                .FontColor("#FFFFFF");
-
-                            total.Item()
-                                .AlignCenter()
-                                .Text(Formatear(_presupuesto.Total))
-                                .FontSize(19)
-                                .Bold()
-                                .FontColor("#FFFFFF");
-                        });
+                    row.RelativeItem(1f).Element(CajaTotal);
                 });
+
+                col.Item().Element(CondicionesYFirma);
+            });
+        }
+
+        private void DetalleImportes(IContainer contenedor)
+        {
+            contenedor.Column(l =>
+            {
+                l.Spacing(3);
+
+                LineaImporte(l, "Impuestos", _presupuesto.Impuestos);
+                LineaImporte(l, "Mano de obra chapa", _presupuesto.ManoObraChapa);
+                LineaImporte(l, "Mano de obra pintura", _presupuesto.ManoObraPintura);
+                LineaImporte(l, "Bancada", _presupuesto.Bancada);
+
+                if ((_presupuesto.OtrosConceptos ?? 0m) > 0m)
+                {
+                    LineaImporte(l, "Otros conceptos", _presupuesto.OtrosConceptos);
+                }
+
+                LineaImporte(l, "Subtotal", _presupuesto.Subtotal, negrita: true);
+
+                if (_presupuesto.IncluirIVA)
+                {
+                    LineaImporte(l, "IVA 21%", _presupuesto.ImporteIVA);
+                }
+                else
+                {
+                    LineaImporte(l, "IVA", null, textoDerecha: "No incluido");
+                }
             });
         }
 
         private void LineaImporte(
             ColumnDescriptor columna,
             string concepto,
-            decimal? importe)
+            decimal? importe,
+            bool negrita = false,
+            string? textoDerecha = null)
         {
-            columna.Item().Row(row =>
-            {
-                row.RelativeItem()
-                    .Text(concepto);
+            columna.Item()
+                .BorderBottom(0.6f)
+                .BorderColor(Borde)
+                .PaddingBottom(1.5f)
+                .DefaultTextStyle(x => negrita ? x.Bold() : x)
+                .Row(row =>
+                {
+                    row.RelativeItem().Text(concepto);
 
-                row.ConstantItem(100)
-                    .AlignRight()
-                    .Text(Formatear(importe ?? 0m));
+                    if (textoDerecha != null)
+                    {
+                        row.ConstantItem(90)
+                            .AlignRight()
+                            .Text(textoDerecha);
+                        return;
+                    }
+
+                    row.ConstantItem(12).Text("$");
+
+                    row.ConstantItem(78)
+                        .AlignRight()
+                        .Text(importe.HasValue && (importe.Value > 0m || negrita)
+                            ? Numero(importe.Value)
+                            : string.Empty);
+                });
+        }
+
+        private void CajaTotal(IContainer contenedor)
+        {
+            contenedor.Column(col =>
+            {
+                col.Item()
+                    .Background(Rojo)
+                    .Padding(12)
+                    .Column(t =>
+                    {
+                        t.Spacing(8);
+
+                        t.Item()
+                            .AlignCenter()
+                            .Text("TOTAL")
+                            .FontSize(22)
+                            .Bold()
+                            .FontColor("#FFFFFF");
+
+                        t.Item()
+                            .Background("#FFFFFF")
+                            .CornerRadius(6)
+                            .PaddingVertical(8)
+                            .PaddingHorizontal(8)
+                            .Text(x =>
+                            {
+                                x.AlignCenter();
+
+                                x.Span("$ ")
+                                    .FontSize(22)
+                                    .Bold()
+                                    .FontColor(Rojo);
+
+                                x.Span(Numero(_presupuesto.Total))
+                                    .FontSize(28)
+                                    .Bold()
+                                    .FontColor("#000000");
+                            });
+                    });
+
+                col.Item().Height(16).Background(RojoOscuro);
             });
         }
 
         private void CondicionesYFirma(IContainer contenedor)
         {
-            contenedor.Column(col =>
+            contenedor.Row(row =>
             {
-                col.Spacing(5);
-
-                col.Item()
-                    .Background(Gris)
-                    .Padding(6)
-                    .Column(condiciones =>
+                row.RelativeItem()
+                    .Column(c =>
                     {
-                        condiciones.Spacing(3);
+                        c.Spacing(2);
 
-                        condiciones.Item()
+                        c.Item()
                             .Text("CONDICIONES")
-                            .FontSize(9)
-                            .Bold();
+                            .FontSize(9.5f)
+                            .Bold()
+                            .FontColor(Rojo);
 
-                        condiciones.Item()
-                            .Text(
-                                "El presente presupuesto queda sujeto a la " +
-                                "revisión del vehículo y a los trabajos " +
-                                "detallados. Cualquier reparación adicional " +
-                                "será informada al cliente.")
-                            .FontSize(8)
-                            .FontColor(GrisTexto);
+                        c.Item().Text("Plazo de mantenimiento de este presupuesto: 15 días.");
+                        c.Item().Text("Todo imprevisto se cotiza por separado.");
+                        c.Item().Text("Este presupuesto no es válido para juicios.").Bold();
                     });
 
-                col.Item().Row(row =>
-                {
-                    row.RelativeItem()
-                        .AlignMiddle()
-                        .Column(datos =>
-                        {
-                            datos.Spacing(3);
+                row.ConstantItem(24);
 
-                            datos.Item()
-                                .Text("Firma del cliente: ____________________")
-                                .FontSize(8);
-
-                            datos.Item()
-                                .Text("Aclaración: __________________________")
-                                .FontSize(8);
-                        });
-
-                    row.ConstantItem(140)
-                        .Height(60)
-                        .AlignCenter()
-                        .AlignMiddle()
-                        .Element(c =>
-                        {
-                            if (_firma != null && _firma.Length > 0)
+                row.ConstantItem(210)
+                    .Column(f =>
+                    {
+                        f.Item()
+                            .Height(40)
+                            .AlignCenter()
+                            .AlignBottom()
+                            .Element(c =>
                             {
-                                c.Image(_firma).FitArea();
-                            }
-                            else
-                            {
-                                c.BorderBottom(1)
-                                    .BorderColor(Negro)
-                                    .AlignCenter()
-                                    .AlignBottom()
-                                    .PaddingBottom(5)
-                                    .Text("Firma y sello del taller")
-                                    .FontSize(8);
-                            }
-                        });
-                });
+                                if (_firma != null && _firma.Length > 0)
+                                {
+                                    c.Image(_firma).FitArea();
+                                }
+                            });
+
+                        f.Item().LineHorizontal(0.8f).LineColor(GrisTexto);
+
+                        f.Item()
+                            .PaddingTop(2)
+                            .Text("FIRMA:")
+                            .FontSize(8)
+                            .Bold();
+                    });
             });
         }
 
-        private static string Formatear(decimal importe)
+        private void PieNegro(IContainer contenedor)
         {
-            return importe.ToString(
-                "$ #,##0.00",
-                CultureInfo.GetCultureInfo("es-AR"));
+            contenedor.Column(col =>
+            {
+                col.Item().Height(3).Background(Rojo);
+
+                col.Item()
+                    .Height(26)
+                    .Background(Negro)
+                    .AlignMiddle()
+                    .AlignCenter()
+                    .Text("Documento no válido como factura")
+                    .FontSize(8)
+                    .FontColor("#FFFFFF");
+            });
+        }
+
+        // ------------------------------------------------------------------
+        // UTILIDADES
+        // ------------------------------------------------------------------
+
+        // 2650000 -> "2.650.000" (con decimales solo si los tiene)
+        private static string Numero(decimal importe)
+        {
+            var formato = importe % 1m == 0m ? "#,##0" : "#,##0.00";
+            return importe.ToString(formato, Es);
         }
 
         private static string NombreTipoImagen(int tipo)
