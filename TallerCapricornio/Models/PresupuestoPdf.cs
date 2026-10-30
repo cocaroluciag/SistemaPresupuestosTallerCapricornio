@@ -217,14 +217,13 @@ namespace TallerCapricornio.Models
             {
                 columna.Item()
                     .Background(Negro)
-                    .PaddingHorizontal(Margen)
-                    .PaddingVertical(12)
                     .Row(row =>
                     {
-                        // Logo (solo en esta primera página)
-                        row.ConstantItem(230)
-                            .Height(62)
-                            .AlignMiddle()
+                        // Logo pegado al borde izquierdo y a todo el alto del encabezado
+                        // (solo en esta primera página). Usar logo-capricornio-encabezado.png:
+                        // el borde derecho está difuminado para fundirse con el fondo.
+                        row.ConstantItem(330)
+                            .Height(96)
                             .Element(c =>
                             {
                                 if (_logo != null && _logo.Length > 0)
@@ -240,14 +239,13 @@ namespace TallerCapricornio.Models
                                 }
                             });
 
-                        row.ConstantItem(14);
-
                         // Franja roja vertical decorativa
                         row.ConstantItem(5).Background(Rojo);
 
                         row.ConstantItem(14);
 
                         row.RelativeItem()
+                            .PaddingRight(Margen)
                             .AlignMiddle()
                             .Column(info =>
                             {
