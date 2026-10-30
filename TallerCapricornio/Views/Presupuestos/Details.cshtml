@@ -1,0 +1,264 @@
+@model TallerCapricornio.Models.Presupuesto
+
+@{
+    ViewData["Title"] = "Detalle del presupuesto";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <span class="text-uppercase text-muted small fw-bold">Taller Capricornio</span>
+            <h2 class="fw-bold mb-1">Presupuesto N.º @Model.Numero</h2>
+            <p class="text-muted mb-0">
+                Creado el @Model.FechaCreacion.ToString("dd/MM/yyyy")
+            </p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                Volver al listado
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-danger">
+                Editar presupuesto
+            </a>
+            <a asp-action="Pdf" asp-route-id="@Model.Id" class="btn btn-dark">
+                Descargar PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">Datos del cliente</h5>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <strong>Apellido y nombre</strong>
+                    <p>@Model.ApellidoNombre</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Teléfono</strong>
+                    <p>@Model.Telefono</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Domicilio</strong>
+                    <p>@Model.Domicilio</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Localidad</strong>
+                    <p>@Model.Localidad</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">Datos del vehículo</h5>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <strong>Vehículo</strong>
+                    <p>@Model.Vehiculo</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Color</strong>
+                    <p>@Model.Color</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Patente</strong>
+                    <p>@Model.Patente</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">Detalle del trabajo</h5>
+
+            <div class="mb-3">
+                <strong>Reparar y pintar</strong>
+                <p class="mt-1">@(string.IsNullOrWhiteSpace(Model.DetalleReparacion) ? "Sin especificar" : Model.DetalleReparacion)</p>
+            </div>
+
+            <div class="mb-3">
+                <strong>Repuestos a proveer</strong>
+                <p class="mt-1">@(string.IsNullOrWhiteSpace(Model.RepuestosAProveer) ? "Sin especificar" : Model.RepuestosAProveer)</p>
+            </div>
+
+            <div>
+                <strong>Observaciones</strong>
+                <p class="mt-1">@(string.IsNullOrWhiteSpace(Model.Observaciones) ? "Sin observaciones" : Model.Observaciones)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">Importes</h5>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <strong>Impuestos</strong>
+                    <p>@((Model.Impuestos ?? 0).ToString("C2"))</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Mano de obra de chapa</strong>
+                    <p>@((Model.ManoObraChapa ?? 0).ToString("C2"))</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Mano de obra de pintura</strong>
+                    <p>@((Model.ManoObraPintura ?? 0).ToString("C2"))</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Bancada</strong>
+                    <p>@((Model.Bancada ?? 0).ToString("C2"))</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Otros conceptos</strong>
+                    <p>@((Model.OtrosConceptos ?? 0).ToString("C2"))</p>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="d-flex justify-content-between">
+                <span>Subtotal</span>
+                <strong>@Model.Subtotal.ToString("C2")</strong>
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+                <span>IVA (21%)</span>
+                <strong>@Model.ImporteIVA.ToString("C2")</strong>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 p-3 bg-light rounded">
+                <h5 class="fw-bold mb-0">TOTAL</h5>
+                <h4 class="fw-bold text-danger mb-0">@Model.Total.ToString("C2")</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3">Documentación y fotografías</h5>
+
+            @{
+                var seguroFrente = Model.Imagenes?.Where(i => i.Tipo == 1).ToList() ?? new();
+                var seguroDorso = Model.Imagenes?.Where(i => i.Tipo == 2).ToList() ?? new();
+                var fotosVehiculo = Model.Imagenes?.Where(i => i.Tipo == 3).ToList() ?? new();
+            }
+
+            <h6 class="fw-bold mt-3">Seguro del vehículo</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <p class="mb-2">Frente</p>
+                    @if (seguroFrente.Any())
+                    {
+                        @foreach (var imagen in seguroFrente)
+                        {
+                            <a asp-action="Imagen" asp-route-id="@imagen.Id" target="_blank">
+                                <img src="@Url.Action("Imagen", new { id = imagen.Id })"
+                                     class="img-fluid rounded border"
+                                     style="max-height:220px; object-fit:contain;"
+                                     alt="Seguro frente" />
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Sin imagen cargada.</p>
+                    }
+                </div>
+
+                <div class="col-md-6">
+                    <p class="mb-2">Dorso</p>
+                    @if (seguroDorso.Any())
+                    {
+                        @foreach (var imagen in seguroDorso)
+                        {
+                            <a asp-action="Imagen" asp-route-id="@imagen.Id" target="_blank">
+                                <img src="@Url.Action("Imagen", new { id = imagen.Id })"
+                                     class="img-fluid rounded border"
+                                     style="max-height:220px; object-fit:contain;"
+                                     alt="Seguro dorso" />
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Sin imagen cargada.</p>
+                    }
+                </div>
+            </div>
+
+            <h6 class="fw-bold">Fotos del vehículo</h6>
+            @if (fotosVehiculo.Any())
+            {
+                <div class="row g-3 mb-4">
+                    @foreach (var imagen in fotosVehiculo)
+                    {
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <a asp-action="Imagen" asp-route-id="@imagen.Id" target="_blank">
+                                <img src="@Url.Action("Imagen", new { id = imagen.Id })"
+                                     class="img-fluid rounded border w-100"
+                                     style="height:180px; object-fit:cover;"
+                                     alt="Foto del vehículo" />
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">Todavía no hay fotos del vehículo.</p>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Agregar documentación o fotografías</h5>
+
+            <form asp-action="SubirImagenes"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <input type="hidden" name="presupuestoId" value="@Model.Id" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Seguro - frente</label>
+                        <input type="file"
+                               name="SeguroFrente"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Seguro - dorso</label>
+                        <input type="file"
+                               name="SeguroDorso"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp" />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Fotos del vehículo</label>
+                        <input type="file"
+                               name="FotosVehiculo"
+                               class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp"
+                               multiple />
+                        <small class="text-muted">Podés seleccionar varias fotografías.</small>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-danger mt-4">
+                    Guardar imágenes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

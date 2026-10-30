@@ -1,0 +1,59 @@
+@model IEnumerable<TallerCapricornio.Models.Presupuesto>
+
+@{
+    ViewData["Title"] = "Presupuestos";
+}
+
+<div class="listado-contenedor">
+    <div class="listado-cabecera">
+        <div>
+            <h1>Presupuestos</h1>
+            <p>Administración de presupuestos del taller</p>
+        </div>
+        <a asp-action="Create" class="btn-rojo">+ Nuevo presupuesto</a>
+    </div>
+
+    <form asp-action="Index" method="get" class="busqueda-form">
+        <input type="text" name="buscar" value="@ViewBag.Buscar"
+               placeholder="Buscar cliente, vehículo o patente..." />
+        <button type="submit" class="btn-negro">Buscar</button>
+        <a asp-action="Index" class="btn-secundario">Limpiar</a>
+    </form>
+
+    <div class="tabla-responsive">
+        <table class="tabla-presupuestos">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Vehículo</th>
+                    <th>Patente</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Numero.ToString("D6")</td>
+                    <td>@p.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                    <td>@p.ApellidoNombre</td>
+                    <td>@p.Vehiculo</td>
+                    <td>@p.Patente</td>
+                    <td class="acciones">
+                        <a asp-action="Details" asp-route-id="@p.Id">Ver</a>
+                        <a asp-action="Edit" asp-route-id="@p.Id">Editar</a>
+                        <a asp-action="Pdf" asp-route-id="@p.Id">PDF</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <p class="sin-resultados">No se encontraron presupuestos.</p>
+    }
+</div>

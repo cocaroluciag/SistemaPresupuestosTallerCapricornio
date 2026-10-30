@@ -1,0 +1,416 @@
+@model TallerCapricornio.Models.Presupuesto
+
+@{
+    ViewData["Title"] = "Nuevo presupuesto";
+}
+
+<div class="formulario-contenedor wizard-presupuesto">
+    <div class="wizard-encabezado">
+        <span class="etiqueta-taller">TALLER CAPRICORNIO</span>
+        <h1>Nuevo presupuesto</h1>
+        <p>Completá los datos del cliente, el vehículo y los trabajos a realizar.</p>
+    </div>
+
+    <div class="progreso-presupuesto">
+        <div class="paso-indicador activo" data-indicador="0">
+            <span>1</span><small>Cliente</small>
+        </div>
+        <div class="paso-indicador" data-indicador="1">
+            <span>2</span><small>Vehículo</small>
+        </div>
+        <div class="paso-indicador" data-indicador="2">
+            <span>3</span><small>Trabajo e importes</small>
+        </div>
+        <div class="paso-indicador" data-indicador="3">
+            <span>4</span><small>Fotografías</small>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data"
+          id="formPresupuesto">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="text-danger resumen-validacion"></div>
+
+        <!-- ETAPA 1: CLIENTE -->
+        <section class="wizard-paso activa" data-paso="0">
+            <div class="seccion-titulo">
+                <span class="numero-seccion">01</span>
+                <div>
+                    <h2>Datos del cliente</h2>
+                    <p>Información de contacto del titular del presupuesto.</p>
+                </div>
+            </div>
+
+            <div class="campos-dos">
+                <div class="campo">
+                    <label asp-for="ApellidoNombre">Apellido y nombre *</label>
+                    <input asp-for="ApellidoNombre" class="form-control"
+                           placeholder="Nombre completo" required />
+                    <span asp-validation-for="ApellidoNombre" class="text-danger"></span>
+                </div>
+
+                <div class="campo">
+                    <label asp-for="Telefono">Teléfono *</label>
+                    <input asp-for="Telefono" class="form-control"
+                           placeholder="Código de área y número" required />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+
+                <div class="campo">
+                    <label asp-for="Domicilio">Domicilio *</label>
+                    <input asp-for="Domicilio" class="form-control"
+                           placeholder="Calle y número" required />
+                    <span asp-validation-for="Domicilio" class="text-danger"></span>
+                </div>
+
+                <div class="campo">
+                    <label asp-for="Localidad">Localidad *</label>
+                    <input asp-for="Localidad" class="form-control"
+                           placeholder="Localidad" required />
+                    <span asp-validation-for="Localidad" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="navegacion-pasos">
+                <a asp-action="Index" class="btn-secundario">Cancelar</a>
+                <button type="button" class="btn-rojo siguiente-paso">
+                    Continuar <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ETAPA 2: VEHÍCULO -->
+        <section class="wizard-paso" data-paso="1" hidden>
+            <div class="seccion-titulo">
+                <span class="numero-seccion">02</span>
+                <div>
+                    <h2>Datos del vehículo</h2>
+                    <p>Identificá el vehículo que ingresa al taller.</p>
+                </div>
+            </div>
+
+            <div class="campos-dos">
+                <div class="campo">
+                    <label asp-for="Vehiculo">Marca, modelo y año *</label>
+                    <input asp-for="Vehiculo" class="form-control"
+                           placeholder="Ej.: Ford F-100" required />
+                    <span asp-validation-for="Vehiculo" class="text-danger"></span>
+                </div>
+
+                <div class="campo">
+                    <label asp-for="Color">Color *</label>
+                    <input asp-for="Color" class="form-control"
+                           placeholder="Color del vehículo" required />
+                    <span asp-validation-for="Color" class="text-danger"></span>
+                </div>
+
+                <div class="campo">
+                    <label asp-for="Patente">Patente *</label>
+                    <input asp-for="Patente" class="form-control"
+                           placeholder="Ej.: AB123CD" required />
+                    <span asp-validation-for="Patente" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="navegacion-pasos">
+                <button type="button" class="btn-secundario anterior-paso">← Volver</button>
+                <button type="button" class="btn-rojo siguiente-paso">Continuar →</button>
+            </div>
+        </section>
+
+        <!-- ETAPA 3: TRABAJO E IMPORTES -->
+        <section class="wizard-paso" data-paso="2" hidden>
+            <div class="seccion-titulo">
+                <span class="numero-seccion">03</span>
+                <div>
+                    <h2>Trabajo e importes</h2>
+                    <p>Detallá las tareas y los valores de uso interno del taller.</p>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label asp-for="DetalleReparacion">Reparar y pintar</label>
+                <textarea asp-for="DetalleReparacion" class="form-control"
+                          rows="4" placeholder="Describí los trabajos a realizar..."></textarea>
+            </div>
+
+            <div class="campo">
+                <label asp-for="RepuestosAProveer">Repuestos a proveer</label>
+                <textarea asp-for="RepuestosAProveer" class="form-control"
+                          rows="3" placeholder="Repuestos necesarios..."></textarea>
+            </div>
+
+            <div class="campo">
+                <label asp-for="Observaciones">Observaciones</label>
+                <textarea asp-for="Observaciones" class="form-control"
+                          rows="3" placeholder="Aclaraciones adicionales..."></textarea>
+            </div>
+
+            <div class="bloque-importes">
+                <h3>Uso exclusivo del taller</h3>
+                <p>Ingresá los importes que correspondan. Los campos pueden quedar vacíos.</p>
+
+                <div class="campos-dos">
+                    <div class="campo">
+                        <label asp-for="Impuestos">Impuestos ($)</label>
+                        <input asp-for="Impuestos" type="number" step="0.01"
+                               min="0" class="form-control" placeholder="0,00" />
+                    </div>
+
+                    <div class="campo">
+                        <label asp-for="ManoObraChapa">Mano de obra de chapa ($)</label>
+                        <input asp-for="ManoObraChapa" type="number" step="0.01"
+                               min="0" class="form-control" placeholder="0,00" />
+                    </div>
+
+                    <div class="campo">
+                        <label asp-for="ManoObraPintura">Mano de obra de pintura ($)</label>
+                        <input asp-for="ManoObraPintura" type="number" step="0.01"
+                               min="0" class="form-control" placeholder="0,00" />
+                    </div>
+
+                    <div class="campo">
+                        <label asp-for="Bancada">Bancada ($)</label>
+                        <input asp-for="Bancada" type="number" step="0.01"
+                               min="0" class="form-control" placeholder="0,00" />
+                    </div>
+
+                    <div class="campo">
+                        <label asp-for="OtrosConceptos">Otros conceptos ($)</label>
+                        <input asp-for="OtrosConceptos" type="number" step="0.01"
+                               min="0" class="form-control" placeholder="0,00" />
+                    </div>
+                </div>
+
+                <div class="checkbox-campo">
+                    <input asp-for="IncluirIVA" />
+                    <label asp-for="IncluirIVA">Incluir IVA del 21 % en el total</label>
+                </div>
+            </div>
+
+            <div class="navegacion-pasos">
+                <button type="button" class="btn-secundario anterior-paso">← Volver</button>
+                <button type="button" class="btn-rojo siguiente-paso">Continuar →</button>
+            </div>
+        </section>
+
+        <!-- ETAPA 4: FOTOGRAFÍAS -->
+        <section class="wizard-paso" data-paso="3" hidden>
+            <div class="seccion-titulo">
+                <span class="numero-seccion">04</span>
+                <div>
+                    <h2>Documentación fotográfica</h2>
+                    <p>Adjuntá las imágenes necesarias para registrar el ingreso del vehículo.</p>
+                </div>
+            </div>
+
+            <div class="bloque-fotos">
+                <div class="foto-cabecera">
+                    <span class="icono-foto">01</span>
+                    <div>
+                        <h3>Seguro del vehículo</h3>
+                        <p>Podés adjuntar el frente y el dorso por separado.</p>
+                    </div>
+                </div>
+
+                <div class="campos-dos">
+                    <div class="campo">
+                        <label for="SeguroFrente">Frente del seguro</label>
+                        <input id="SeguroFrente" name="SeguroFrente"
+                               type="file" class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                        <small>JPG, PNG o WEBP. Máximo 15 MB.</small>
+                    </div>
+
+                    <div class="campo">
+                        <label for="SeguroDorso">Dorso del seguro</label>
+                        <input id="SeguroDorso" name="SeguroDorso"
+                               type="file" class="form-control"
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                        <small>JPG, PNG o WEBP. Máximo 15 MB.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bloque-fotos">
+                <div class="foto-cabecera">
+                    <span class="icono-foto">02</span>
+                    <div>
+                        <h3>Estado del vehículo</h3>
+                        <p>Podés seleccionar hasta 20 fotografías.</p>
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="FotosVehiculo">Fotos del vehículo</label>
+                    <input id="FotosVehiculo" name="FotosVehiculo"
+                           type="file" class="form-control"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                           multiple />
+                    <small>Seleccioná varias imágenes juntas. Máximo 15 MB por archivo.</small>
+                    <div id="resumenFotos" class="resumen-fotos" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <div class="aviso-presupuesto">
+                <strong>Antes de guardar</strong>
+                <p>Revisá los datos ingresados. El presupuesto se guardará con un número correlativo.</p>
+            </div>
+
+            <div class="navegacion-pasos">
+                <button type="button" class="btn-secundario anterior-paso">← Volver</button>
+                <button type="submit" class="btn-rojo">Guardar presupuesto</button>
+            </div>
+        </section>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (() => {
+            const formulario = document.getElementById("formPresupuesto");
+            if (!formulario) return;
+
+            const pasos = Array.from(formulario.querySelectorAll(".wizard-paso"));
+            const indicadores = Array.from(
+                document.querySelectorAll(".paso-indicador"));
+            let pasoActual = 0;
+
+            function mostrarPaso(indice) {
+                pasoActual = Math.max(0, Math.min(indice, pasos.length - 1));
+
+                pasos.forEach((paso, i) => {
+                    paso.hidden = i !== pasoActual;
+                    paso.classList.toggle("activa", i === pasoActual);
+                });
+
+                indicadores.forEach((indicador, i) => {
+                    indicador.classList.toggle("activo", i === pasoActual);
+                    indicador.classList.toggle("completado", i < pasoActual);
+                });
+
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+
+            function validarPasoActual() {
+                const campos = pasos[pasoActual].querySelectorAll(
+                    "input, select, textarea");
+
+                for (const campo of campos) {
+                    if (campo.disabled || campo.type === "file") continue;
+
+                    if (!campo.checkValidity()) {
+                        campo.reportValidity();
+                        campo.focus();
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            formulario.querySelectorAll(".siguiente-paso").forEach(boton => {
+                boton.addEventListener("click", () => {
+                    if (validarPasoActual()) mostrarPaso(pasoActual + 1);
+                });
+            });
+
+            formulario.querySelectorAll(".anterior-paso").forEach(boton => {
+                boton.addEventListener("click", () => mostrarPaso(pasoActual - 1));
+            });
+
+            const inputFotos = document.getElementById("FotosVehiculo");
+            const resumenFotos = document.getElementById("resumenFotos");
+            const extensionesPermitidas = [".jpg", ".jpeg", ".png", ".webp"];
+            const maxBytes = 15 * 1024 * 1024;
+
+            function validarArchivo(archivo) {
+                const extension = "." + archivo.name.split(".").pop().toLowerCase();
+
+                if (!extensionesPermitidas.includes(extension)) {
+                    return `Formato no permitido: ${archivo.name}`;
+                }
+
+                if (archivo.size > maxBytes) {
+                    return `${archivo.name} supera el límite de 15 MB.`;
+                }
+
+                return "";
+            }
+
+            function revisarFotos() {
+                const archivos = Array.from(inputFotos.files || []);
+                resumenFotos.textContent = "";
+
+                if (archivos.length > 20) {
+                    resumenFotos.textContent =
+                        "Podés seleccionar hasta 20 fotos del vehículo.";
+                    inputFotos.setCustomValidity(
+                        "El máximo es de 20 fotografías.");
+                    return;
+                }
+
+                const error = archivos.map(validarArchivo).find(mensaje => mensaje);
+
+                if (error) {
+                    resumenFotos.textContent = error;
+                    inputFotos.setCustomValidity(error);
+                    return;
+                }
+
+                inputFotos.setCustomValidity("");
+                resumenFotos.textContent = archivos.length
+                    ? `${archivos.length} fotografía(s) seleccionada(s).`
+                    : "No seleccionaste fotografías del vehículo.";
+            }
+
+            inputFotos.addEventListener("change", revisarFotos);
+
+            ["SeguroFrente", "SeguroDorso"].forEach(id => {
+                const input = document.getElementById(id);
+
+                input.addEventListener("change", () => {
+                    const archivo = input.files && input.files[0];
+                    const error = archivo ? validarArchivo(archivo) : "";
+
+                    input.setCustomValidity(error);
+
+                    if (error) {
+                        input.reportValidity();
+                    }
+                });
+            });
+
+            formulario.addEventListener("submit", event => {
+                revisarFotos();
+
+                if (!validarPasoActual()) {
+                    event.preventDefault();
+                    return;
+                }
+
+                const archivosSeguro = ["SeguroFrente", "SeguroDorso"]
+                    .map(id => document.getElementById(id))
+                    .filter(input => input.files && input.files.length > 0);
+
+                for (const input of archivosSeguro) {
+                    if (!input.checkValidity()) {
+                        event.preventDefault();
+                        input.reportValidity();
+                        return;
+                    }
+                }
+
+                if (!inputFotos.checkValidity()) {
+                    event.preventDefault();
+                    inputFotos.reportValidity();
+                }
+            });
+
+            mostrarPaso(0);
+        })();
+    </script>
+}

@@ -1,0 +1,107 @@
+@model TallerCapricornio.Models.Presupuesto
+
+@{
+    ViewData["Title"] = "Editar presupuesto";
+}
+
+<div class="formulario-contenedor">
+    <h1>Editar presupuesto N.º @Model.Numero.ToString("D6")</h1>
+
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <h2>Datos del cliente</h2>
+
+        <div class="campos-dos">
+            <div class="campo">
+                <label asp-for="ApellidoNombre">Apellido y nombre</label>
+                <input asp-for="ApellidoNombre" required />
+            </div>
+            <div class="campo">
+                <label asp-for="Telefono">Teléfono</label>
+                <input asp-for="Telefono" required />
+            </div>
+            <div class="campo">
+                <label asp-for="Domicilio">Domicilio</label>
+                <input asp-for="Domicilio" required />
+            </div>
+            <div class="campo">
+                <label asp-for="Localidad">Localidad</label>
+                <input asp-for="Localidad" required />
+            </div>
+        </div>
+
+        <h2>Datos del vehículo</h2>
+
+        <div class="campos-dos">
+            <div class="campo">
+                <label asp-for="Vehiculo">Vehículo</label>
+                <input asp-for="Vehiculo" required />
+            </div>
+            <div class="campo">
+                <label asp-for="Color">Color</label>
+                <input asp-for="Color" required />
+            </div>
+            <div class="campo">
+                <label asp-for="Patente">Patente</label>
+                <input asp-for="Patente" required />
+            </div>
+        </div>
+
+        <h2>Detalle del trabajo</h2>
+
+        <div class="campo">
+            <label asp-for="DetalleReparacion">Reparar y pintar</label>
+            <textarea asp-for="DetalleReparacion" rows="4"></textarea>
+        </div>
+
+        <div class="campo">
+            <label asp-for="RepuestosAProveer">Repuestos a proveer</label>
+            <textarea asp-for="RepuestosAProveer" rows="3"></textarea>
+        </div>
+
+        <div class="campo">
+            <label asp-for="Observaciones">Observaciones</label>
+            <textarea asp-for="Observaciones" rows="2"></textarea>
+        </div>
+
+        <h2>Importes del taller</h2>
+
+        <div class="campos-dos">
+            <div class="campo">
+                <label asp-for="Impuestos">Impuestos ($)</label>
+                <input asp-for="Impuestos" type="number" min="0" step="0.01" />
+            </div>
+            <div class="campo">
+                <label asp-for="ManoObraChapa">Mano de obra chapa ($)</label>
+                <input asp-for="ManoObraChapa" type="number" min="0" step="0.01" />
+            </div>
+            <div class="campo">
+                <label asp-for="ManoObraPintura">Mano de obra pintura ($)</label>
+                <input asp-for="ManoObraPintura" type="number" min="0" step="0.01" />
+            </div>
+            <div class="campo">
+                <label asp-for="Bancada">Bancada ($)</label>
+                <input asp-for="Bancada" type="number" min="0" step="0.01" />
+            </div>
+            <div class="campo">
+                <label asp-for="OtrosConceptos">Otros conceptos ($)</label>
+                <input asp-for="OtrosConceptos" type="number" min="0" step="0.01" />
+            </div>
+        </div>
+
+        <div class="campo checkbox-campo">
+            <input asp-for="IncluirIVA" />
+            <label asp-for="IncluirIVA">Incluir IVA del 21 %</label>
+        </div>
+
+        <div class="navegacion-pasos">
+            <a asp-action="Details" asp-route-id="@Model.Id"
+               class="btn-secundario">Cancelar</a>
+            <button type="submit" class="btn-rojo">Guardar cambios</button>
+        </div>
+    </form>
+</div>
