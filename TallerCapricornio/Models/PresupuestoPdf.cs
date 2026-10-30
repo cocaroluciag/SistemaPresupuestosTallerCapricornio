@@ -54,13 +54,14 @@ namespace TallerCapricornio.Models
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(25);
+                page.Margin(20);
+
                 page.DefaultTextStyle(x =>
                     x.FontSize(9).FontColor(Negro));
 
                 page.Content().Column(col =>
                 {
-                    col.Spacing(9);
+                    col.Spacing(6);
 
                     col.Item().Element(Encabezado);
                     col.Item().Element(FranjaTitulo);
@@ -97,10 +98,7 @@ namespace TallerCapricornio.Models
                         "REPUESTOS A PROVEER",
                         _presupuesto.RepuestosAProveer));
 
-                    col.Item().Element(c => SeccionTexto(
-                        c,
-                        "OBSERVACIONES",
-                        _presupuesto.Observaciones));
+                    // Se eliminó el apartado de observaciones.
 
                     col.Item().Element(Importes);
                     col.Item().Element(CondicionesYFirma);
@@ -127,6 +125,7 @@ namespace TallerCapricornio.Models
                     {
                         page.Size(PageSizes.A4);
                         page.Margin(15);
+
                         page.DefaultTextStyle(x =>
                             x.FontSize(10).FontColor(Negro));
 
@@ -178,11 +177,11 @@ namespace TallerCapricornio.Models
         {
             contenedor
                 .Background(Negro)
-                .Padding(12)
+                .Padding(8)
                 .Row(row =>
                 {
                     row.ConstantItem(125)
-                        .Height(80)
+                        .Height(62)
                         .AlignCenter()
                         .AlignMiddle()
                         .Element(c =>
@@ -208,7 +207,7 @@ namespace TallerCapricornio.Models
                         .AlignMiddle()
                         .Column(col =>
                         {
-                            col.Spacing(4);
+                            col.Spacing(2);
 
                             col.Item()
                                 .Text("TALLER CAPRICORNIO")
@@ -300,7 +299,7 @@ namespace TallerCapricornio.Models
         {
             contenedor.Column(col =>
             {
-                col.Spacing(5);
+                col.Spacing(3);
 
                 col.Item()
                     .Background(Negro)
@@ -314,10 +313,10 @@ namespace TallerCapricornio.Models
                 col.Item()
                     .Border(1)
                     .BorderColor("#D0D0D0")
-                    .Padding(8)
+                    .Padding(6)
                     .Column(datos =>
                     {
-                        datos.Spacing(6);
+                        datos.Spacing(4);
 
                         foreach (var campo in campos)
                         {
@@ -343,7 +342,7 @@ namespace TallerCapricornio.Models
         {
             contenedor.Column(col =>
             {
-                col.Spacing(4);
+                col.Spacing(3);
 
                 col.Item()
                     .Background(Negro)
@@ -357,7 +356,7 @@ namespace TallerCapricornio.Models
                 col.Item()
                     .Border(1)
                     .BorderColor("#D0D0D0")
-                    .Padding(8)
+                    .Padding(6)
                     .MinHeight(30)
                     .Text(string.IsNullOrWhiteSpace(contenido)
                         ? "—"
@@ -370,7 +369,7 @@ namespace TallerCapricornio.Models
         {
             contenedor.Column(col =>
             {
-                col.Spacing(5);
+                col.Spacing(3);
 
                 col.Item()
                     .Background(Negro)
@@ -386,10 +385,10 @@ namespace TallerCapricornio.Models
                     row.RelativeItem(1.3f)
                         .Border(1)
                         .BorderColor("#D0D0D0")
-                        .Padding(8)
+                        .Padding(6)
                         .Column(detalle =>
                         {
-                            detalle.Spacing(7);
+                            detalle.Spacing(5);
 
                             LineaImporte(
                                 detalle, "Impuestos",
@@ -442,16 +441,16 @@ namespace TallerCapricornio.Models
                             }
                         });
 
-                    row.ConstantItem(10);
+                    row.ConstantItem(8);
 
                     row.RelativeItem()
                         .Background(Rojo)
-                        .Padding(12)
+                        .Padding(9)
                         .AlignCenter()
                         .AlignMiddle()
                         .Column(total =>
                         {
-                            total.Spacing(8);
+                            total.Spacing(6);
 
                             total.Item()
                                 .AlignCenter()
@@ -491,14 +490,14 @@ namespace TallerCapricornio.Models
         {
             contenedor.Column(col =>
             {
-                col.Spacing(7);
+                col.Spacing(5);
 
                 col.Item()
                     .Background(Gris)
-                    .Padding(8)
+                    .Padding(6)
                     .Column(condiciones =>
                     {
-                        condiciones.Spacing(4);
+                        condiciones.Spacing(3);
 
                         condiciones.Item()
                             .Text("CONDICIONES")
@@ -521,7 +520,7 @@ namespace TallerCapricornio.Models
                         .AlignMiddle()
                         .Column(datos =>
                         {
-                            datos.Spacing(4);
+                            datos.Spacing(3);
 
                             datos.Item()
                                 .Text("Firma del cliente: ____________________")
@@ -533,7 +532,7 @@ namespace TallerCapricornio.Models
                         });
 
                     row.ConstantItem(140)
-                        .Height(65)
+                        .Height(60)
                         .AlignCenter()
                         .AlignMiddle()
                         .Element(c =>
