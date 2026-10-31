@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TallerCapricornio.styles.css" asp-append-version="true" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
+
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     Taller Capricornio
                 </a>
@@ -32,10 +34,13 @@
                             <a class="nav-link text-dark"
                                asp-area=""
                                asp-controller="Home"
-                               asp-action="Index">Inicio</a>
+                               asp-action="Index">
+                                Inicio
+                            </a>
                         </li>
                     </ul>
                 </div>
+
             </div>
         </nav>
     </header>
@@ -45,12 +50,6 @@
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Taller Capricornio
-        </div>
-    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
