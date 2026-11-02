@@ -29,7 +29,7 @@
                     <th>Cliente</th>
                     <th>Vehículo</th>
                     <th>Patente</th>
-                    <th>Acciones</th>
+                    <th class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,9 +42,23 @@
                     <td>@p.Vehiculo</td>
                     <td>@p.Patente</td>
                     <td class="acciones">
-                        <a asp-action="Details" asp-route-id="@p.Id">Ver</a>
-                        <a asp-action="Edit" asp-route-id="@p.Id">Editar</a>
-                        <a asp-action="Pdf" asp-route-id="@p.Id">PDF</a>
+                        @{ var numeroTexto = p.Numero.ToString("D6"); }
+                        <div class="d-flex gap-1 justify-content-end">
+                            <a asp-action="Details" asp-route-id="@p.Id"
+                               class="btn btn-sm btn-outline-dark">Ver</a>
+
+                            <a asp-action="Pdf" asp-route-id="@p.Id"
+                               class="btn btn-sm btn-primary">Descargar</a>
+
+                            <a asp-action="Edit" asp-route-id="@p.Id"
+                               class="btn btn-sm btn-outline-danger">Editar</a>
+
+                            <form asp-action="Delete" asp-route-id="@p.Id" method="post"
+                                  class="m-0"
+                                  onsubmit="return confirm('¿Eliminar el presupuesto N.º @numeroTexto? Esta acción no se puede deshacer.');">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             }
@@ -56,4 +70,4 @@
     {
         <p class="sin-resultados">No se encontraron presupuestos.</p>
     }
-</div>
+</div> 
