@@ -195,6 +195,23 @@ public class PresupuestosController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var presupuesto = await _context.Presupuestos
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (presupuesto == null)
+            return NotFound();
+
+        // Las imágenes se eliminan en cascada (configurado en TallerDbContext).
+        _context.Presupuestos.Remove(presupuesto);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> SubirImagenes(
         int presupuestoId,
         IFormFile? SeguroFrente,
