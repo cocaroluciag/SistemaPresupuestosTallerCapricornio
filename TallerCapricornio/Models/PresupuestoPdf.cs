@@ -590,14 +590,11 @@ namespace TallerCapricornio.Models
 
                 LineaImporte(l, "Subtotal", _presupuesto.Subtotal, negrita: true);
 
-                if (_presupuesto.IncluirIVA)
-                {
-                    LineaImporte(l, "IVA 21%", _presupuesto.ImporteIVA);
-                }
-                else
-                {
-                    LineaImporte(l, "IVA", null, textoDerecha: "No incluido");
-                }
+                LineaImporte(
+                    l,
+                    "IVA",
+                    null,
+                    textoDerecha: _presupuesto.IncluirIVA ? "21% incluido" : "No incluido");
             });
         }
 
