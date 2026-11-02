@@ -1,4 +1,3 @@
-
 @model TallerCapricornio.Models.Presupuesto
 
 @{
@@ -15,6 +14,7 @@
 
     <!-- INDICADOR DE PROGRESO -->
     <div class="progreso-presupuesto">
+
         <div class="paso-indicador activo" data-indicador="0">
             <span>1</span>
             <small>Cliente</small>
@@ -34,12 +34,15 @@
             <span>4</span>
             <small>Fotografías</small>
         </div>
+
     </div>
 
-    <form asp-action="Create"
+    <form asp-controller="Presupuestos"
+          asp-action="Create"
           method="post"
           enctype="multipart/form-data"
-          id="formPresupuesto">
+          id="formPresupuesto"
+          novalidate>
 
         @Html.AntiForgeryToken()
 
@@ -116,7 +119,10 @@
             </div>
 
             <div class="navegacion-pasos">
-                <a asp-action="Index" class="btn-secundario">
+
+                <a asp-controller="Presupuestos"
+                   asp-action="Index"
+                   class="btn-secundario">
                     Cancelar
                 </a>
 
@@ -124,6 +130,7 @@
                         class="btn-rojo siguiente-paso">
                     Continuar <span aria-hidden="true">→</span>
                 </button>
+
             </div>
 
         </section>
@@ -188,6 +195,7 @@
             </div>
 
             <div class="navegacion-pasos">
+
                 <button type="button"
                         class="btn-secundario anterior-paso">
                     ← Volver
@@ -197,6 +205,7 @@
                         class="btn-rojo siguiente-paso">
                     Continuar →
                 </button>
+
             </div>
 
         </section>
@@ -327,6 +336,7 @@
 
                 <div class="checkbox-campo">
                     <input asp-for="IncluirIVA" />
+
                     <label asp-for="IncluirIVA">
                         Incluir IVA del 21 % en el total
                     </label>
@@ -335,6 +345,7 @@
             </div>
 
             <div class="navegacion-pasos">
+
                 <button type="button"
                         class="btn-secundario anterior-paso">
                     ← Volver
@@ -344,6 +355,7 @@
                         class="btn-rojo siguiente-paso">
                     Continuar →
                 </button>
+
             </div>
 
         </section>
@@ -361,6 +373,7 @@
 
                 <div>
                     <h2>Documentación fotográfica</h2>
+
                     <p>
                         Adjuntá las imágenes necesarias para registrar
                         el ingreso del vehículo.
@@ -369,6 +382,7 @@
             </div>
 
             <!-- SEGURO -->
+
             <div class="bloque-fotos">
 
                 <div class="foto-cabecera">
@@ -376,6 +390,7 @@
 
                     <div>
                         <h3>Seguro del vehículo</h3>
+
                         <p>
                             Podés adjuntar el frente y el dorso por separado.
                         </p>
@@ -417,6 +432,7 @@
             </div>
 
             <!-- ESTADO DEL VEHÍCULO -->
+
             <div class="bloque-fotos">
 
                 <div class="foto-cabecera">
@@ -481,6 +497,7 @@
         </section>
 
     </form>
+
 </div>
 
 @section Scripts {
@@ -551,7 +568,6 @@
                         block: "start"
                     });
                 }
-
             }
 
             // Validar los campos de la etapa actual.
@@ -566,18 +582,16 @@
                     if (!campo.checkValidity()) {
 
                         campo.reportValidity();
-
                         campo.focus();
 
                         return false;
                     }
-
                 }
 
                 return true;
             }
 
-            // Navegación de los botones Continuar y Volver.
+            // Navegación entre etapas.
             formulario.addEventListener("click", function (evento) {
 
                 const objetivo = evento.target;
@@ -596,24 +610,21 @@
                     }
 
                     mostrarPaso(pasoActual + 1);
-
                 }
 
                 if (anterior) {
-
                     mostrarPaso(pasoActual - 1);
-
                 }
-
             });
 
-            // Resumen de las fotografías seleccionadas.
+            // Entradas de fotografías.
             const entradasFotos = [
                 document.getElementById("SeguroFrente"),
                 document.getElementById("SeguroDorso"),
                 document.getElementById("FotosVehiculo")
             ].filter(Boolean);
 
+            // Actualizar resumen de fotografías.
             entradasFotos.forEach(function (entrada) {
 
                 entrada.addEventListener("change", function () {
@@ -626,10 +637,6 @@
                         "FotosVehiculo"
                     );
 
-                    const cantidadVehiculo = archivosVehiculo
-                        ? archivosVehiculo.files.length
-                        : 0;
-
                     const seguroFrente = document.getElementById(
                         "SeguroFrente"
                     );
@@ -637,6 +644,10 @@
                     const seguroDorso = document.getElementById(
                         "SeguroDorso"
                     );
+
+                    const cantidadVehiculo = archivosVehiculo
+                        ? archivosVehiculo.files.length
+                        : 0;
 
                     const cantidadSeguro =
                         (seguroFrente && seguroFrente.files.length > 0 ? 1 : 0) +
@@ -664,21 +675,17 @@
                             if (archivo.size > 15 * 1024 * 1024) {
                                 archivoDemasiadoGrande = true;
                             }
-
                         }
-
                     }
 
                     if (archivoDemasiadoGrande) {
                         resumenFotos.textContent +=
                             " Atención: hay archivos que superan los 15 MB.";
                     }
-
                 });
-
             });
 
-            // Avisar si hay demasiadas fotos o archivos grandes.
+            // Validaciones finales antes de enviar.
             formulario.addEventListener("submit", function (evento) {
 
                 if (pasoActual !== pasos.length - 1) {
@@ -691,12 +698,17 @@
                     return;
                 }
 
-                const fotosVehiculo = document.getElementById("FotosVehiculo");
+                const fotosVehiculo = document.getElementById(
+                    "FotosVehiculo"
+                );
 
                 if (fotosVehiculo && fotosVehiculo.files.length > 20) {
+
                     evento.preventDefault();
 
-                    alert("Podés seleccionar hasta 20 fotografías del vehículo.");
+                    alert(
+                        "Podés seleccionar hasta 20 fotografías del vehículo."
+                    );
 
                     return;
                 }
@@ -706,18 +718,18 @@
                     for (const archivo of entrada.files) {
 
                         if (archivo.size > 15 * 1024 * 1024) {
+
                             evento.preventDefault();
 
                             alert(
                                 "El archivo \"" + archivo.name +
-                                "\" supera los 15 MB. Elegí una imagen más pequeña."
+                                "\" supera los 15 MB. " +
+                                "Elegí una imagen más pequeña."
                             );
 
                             return;
                         }
-
                     }
-
                 }
 
                 const botonGuardar = document.getElementById("btnGuardar");
@@ -726,10 +738,9 @@
                     botonGuardar.disabled = true;
                     botonGuardar.textContent = "Guardando presupuesto...";
                 }
-
             });
 
-            // Inicializar siempre en la primera etapa.
+            // Comenzar siempre en la primera etapa.
             mostrarPaso(0);
 
         });
