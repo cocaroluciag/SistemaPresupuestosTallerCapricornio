@@ -243,25 +243,37 @@ public class PresupuestosController : Controller
     // =============================================
     // ELIMINAR PRESUPUESTO
     // =============================================
+    
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Delete(int id)
+{
+    // Buscar el presupuesto junto con sus imágenes.
+    var presupuesto = await _context.Presupuestos
+        .Include(p => p.Imagenes)
+        .FirstOrDefaultAsync(p => p.Id == id);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
+    if (presupuesto == null)
+        return NotFound();
+
+    // Eliminar primero las imágenes asociadas.
+    if (presupuesto.Imagenes != null &&
+        presupuesto.Imagenes.Any())
     {
-        var presupuesto = await _context.Presupuestos
-            .FirstOrDefaultAsync(p => p.Id == id);
-
-        if (presupuesto == null)
-            return NotFound();
-
-        // Las imágenes se eliminan en cascada,
-        // según la configuración de TallerDbContext.
-        _context.Presupuestos.Remove(presupuesto);
-
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction(nameof(Index));
+        _context.Imagenes.RemoveRange(
+            presupuesto.Imagenes);
     }
+
+    // Eliminar después el presupuesto.
+    _context.Presupuestos.Remove(presupuesto);
+
+    // Guardar los cambios.
+    await _context.SaveChangesAsync();
+
+    // Volver al historial.
+    return RedirectToAction(nameof(Index));
+}
+
 
     // =============================================
     // AGREGAR IMÁGENES A UN PRESUPUESTO EXISTENTE
