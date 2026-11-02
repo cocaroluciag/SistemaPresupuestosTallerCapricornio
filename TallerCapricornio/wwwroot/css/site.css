@@ -1412,3 +1412,70 @@ body {
         padding: 10px 5px 25px;
     }
 }
+
+/* =========================================
+   HISTORIAL RESPONSIVE PARA CELULARES
+========================================= */
+
+/* Contenedor de la tabla */
+.tabla-responsive {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    display: block;
+}
+
+/* La tabla conserva el ancho necesario */
+.tabla-presupuestos {
+    min-width: 950px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Evitar que las acciones se compriman */
+.tabla-presupuestos th,
+.tabla-presupuestos td {
+    white-space: nowrap;
+}
+
+/* Adaptación de la cabecera */
+@media (max-width: 768px) {
+
+    .listado-contenedor {
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    .listado-cabecera {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .listado-cabecera h1 {
+        font-size: 24px;
+    }
+
+    .busqueda-form {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .busqueda-form input {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .tabla-responsive {
+        margin-top: 15px;
+        border-radius: 8px;
+    }
+}
