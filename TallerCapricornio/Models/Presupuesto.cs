@@ -69,12 +69,10 @@ public class Presupuesto
         (Bancada ?? 0m) +
         (OtrosConceptos ?? 0m);
 
+    // Los importes cargados ya incluyen IVA (si IncluirIVA está tildado).
+    // El IVA no se suma: el total es igual al subtotal.
     [NotMapped]
-    public decimal ImporteIVA =>
-        IncluirIVA ? Math.Round(Subtotal * 0.21m, 2) : 0m;
-
-    [NotMapped]
-    public decimal Total => Subtotal + ImporteIVA;
+    public decimal Total => Subtotal;
 
     // Fotos asociadas al presupuesto
     public ICollection<Imagen> Imagenes { get; set; } =
