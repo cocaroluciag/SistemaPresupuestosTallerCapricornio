@@ -867,3 +867,209 @@ a {
         margin-left: 0;
     }
 }
+
+    
+/* ============================================================
+   AJUSTES FINALES - CAPRICORNIO
+   ENCABEZADO RESPONSIVE Y FORMULARIO POR ETAPAS
+   ============================================================ */
+
+/* Evitar desbordamientos horizontales */
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+/* El encabezado negro ocupa todo el ancho */
+.encabezado-sitio {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Contenido interno del encabezado */
+.encabezado-interno {
+    width: min(1100px, calc(100% - 40px));
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* El encabezado del formulario también conserva su ancho */
+.wizard-encabezado {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* El fondo negro no debe quedar limitado en celulares */
+@media (max-width: 650px) {
+    .encabezado-sitio {
+        width: 100vw;
+        max-width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        border-radius: 0;
+    }
+
+    .encabezado-interno {
+        width: calc(100% - 30px);
+        padding: 16px 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .marca-sitio {
+        max-width: 100%;
+    }
+
+    .marca-sitio strong {
+        font-size: 22px;
+    }
+
+    .menu-sitio {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        width: 100%;
+    }
+
+    .menu-sitio a {
+        margin-left: 0;
+        font-size: 14px;
+    }
+
+    /* Historial: aprovechar mejor el ancho disponible */
+    .historial {
+        width: calc(100% - 24px);
+        margin: 20px auto;
+    }
+
+    .historial-cabecera h1 {
+        font-size: 26px;
+    }
+
+    .historial-busqueda {
+        width: 100%;
+    }
+
+    .historial-busqueda input {
+        width: 100%;
+    }
+
+    .historial-busqueda button,
+    .historial-busqueda .btn-limpiar {
+        flex: 1;
+    }
+
+    /* Formulario: evitar que se corte en pantallas pequeñas */
+    .wizard-presupuesto {
+        width: calc(100% - 16px);
+        max-width: 100%;
+    }
+
+    .wizard-encabezado {
+        width: 100%;
+        padding: 22px 18px;
+    }
+
+    .wizard-presupuesto form {
+        padding: 18px;
+    }
+
+    .progreso-presupuesto {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .paso-indicador {
+        min-width: 0;
+    }
+
+    .paso-indicador small {
+        overflow-wrap: anywhere;
+    }
+
+    .navegacion-pasos {
+        gap: 10px;
+    }
+
+    .navegacion-pasos button,
+    .navegacion-pasos a {
+        min-height: 44px;
+    }
+}
+
+/* ============================================================
+   VISIBILIDAD CORRECTA DE LAS ETAPAS DEL FORMULARIO
+   ============================================================ */
+
+/* Una etapa oculta nunca debe mostrarse */
+.wizard-paso[hidden] {
+    display: none !important;
+}
+
+/* Solo se muestra la etapa activa */
+.wizard-paso:not([hidden]) {
+    display: none;
+}
+
+.wizard-paso.activa:not([hidden]) {
+    display: block;
+}
+
+/* Botones de navegación */
+.btn-rojo,
+.btn-secundario {
+    min-height: 44px;
+    text-align: center;
+}
+
+/* Mejor visualización de campos y botones */
+.wizard-presupuesto input,
+.wizard-presupuesto textarea,
+.wizard-presupuesto select,
+.wizard-presupuesto button {
+    max-width: 100%;
+}
+
+.wizard-presupuesto input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    background: #fafafa;
+}
+
+/* Evitar que las tablas ensanchen toda la pantalla */
+.historial-tabla,
+.tabla-contenedor {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Ajustes para celulares muy angostos */
+@media (max-width: 380px) {
+    .marca-sitio strong {
+        font-size: 19px;
+        letter-spacing: 1px;
+    }
+
+    .wizard-encabezado h1 {
+        font-size: 22px;
+    }
+
+    .paso-indicador small {
+        font-size: 9px;
+    }
+
+    .btn-rojo,
+    .btn-secundario {
+        padding: 11px 13px;
+        font-size: 13px;
+    }
+}
