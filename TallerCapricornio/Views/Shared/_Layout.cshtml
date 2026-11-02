@@ -11,38 +11,18 @@
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
+    <header class="encabezado-sitio">
+        <div class="encabezado-interno">
+            <a class="marca-sitio" asp-controller="Presupuestos" asp-action="Index">
+                <strong>CAPRICORNIO</strong>
+                <small>Taller de carrocería y pintura</small>
+            </a>
 
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    Taller Capricornio
-                </a>
-
-                <button class="navbar-toggler" type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Abrir menú">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Inicio
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-            </div>
-        </nav>
+            <nav class="menu-sitio">
+                <a asp-controller="Presupuestos" asp-action="Index">Historial</a>
+                <a asp-controller="Presupuestos" asp-action="Create">Nuevo ingreso</a>
+            </nav>
+        </div>
     </header>
 
     <div class="container">
