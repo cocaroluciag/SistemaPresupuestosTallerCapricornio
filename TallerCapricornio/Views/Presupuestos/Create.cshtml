@@ -185,7 +185,7 @@
 
                 <div class="checkbox-campo">
                     <input asp-for="IncluirIVA" />
-                    <label asp-for="IncluirIVA">Incluir IVA del 21 % en el total</label>
+                    <label asp-for="IncluirIVA">Los importes ingresados ya incluyen IVA (21 %)</label>
                 </div>
             </div>
 
@@ -331,11 +331,11 @@
                 const extension = "." + archivo.name.split(".").pop().toLowerCase();
 
                 if (!extensionesPermitidas.includes(extension)) {
-                    return `Formato no permitido: ${archivo.name}`;
+                    return Formato no permitido: ${archivo.name};
                 }
 
                 if (archivo.size > maxBytes) {
-                    return `${archivo.name} supera el límite de 15 MB.`;
+                    return ${archivo.name} supera el límite de 15 MB.;
                 }
 
                 return "";
@@ -363,7 +363,7 @@
 
                 inputFotos.setCustomValidity("");
                 resumenFotos.textContent = archivos.length
-                    ? `${archivos.length} fotografía(s) seleccionada(s).`
+                    ? ${archivos.length} fotografía(s) seleccionada(s).
                     : "No seleccionaste fotografías del vehículo.";
             }
 
